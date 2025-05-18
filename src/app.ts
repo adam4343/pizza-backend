@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser(process.env.SECRET_KEY));
 app.use(cors({
-  origin: "https://next-pizza-black.vercel.app",
+  origin: "http://localhost:3000",
   credentials: true
 }));
 app.use('/auth', authRouter);
