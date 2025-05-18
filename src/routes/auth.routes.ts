@@ -26,7 +26,7 @@ const cookieOption: CookieOptions = {
   expires: addDays(new Date(), 7),
   httpOnly: true,
   secure: env.NODE_ENV === "dev" ? false : true,
-  sameSite: "lax",
+  sameSite: env.NODE_ENV === "dev" ? "lax" : "none",
 };
 
 authRouter.post("/google", async (req, res) => {
