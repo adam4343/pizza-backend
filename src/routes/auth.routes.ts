@@ -245,11 +245,7 @@ authRouter.post("/logout", (req, res) => {
       throw new Error("This user is not authenticated");
     }
 
-    res.clearCookie("auth-token", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+    res.clearCookie("auth-token", cookieOption);
 
     res.json({ data: "You were logged out" });
   } catch (e) {
