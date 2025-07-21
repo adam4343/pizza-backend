@@ -22,6 +22,7 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^2.5.0",
     "@libsql/client": "^0.14.0",
     "@types/cookie-parser": "^1.4.8",
     "bcrypt": "^5.1.1",

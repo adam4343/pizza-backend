@@ -12,7 +12,6 @@ export const cartRouter = Router();
 
 cartRouter.post("/", authenticateUser, async (req, res) => {
     try {
-
         const userId = getUser(req);
         const body = validateSchema(cartItemSchema, req.body);
 

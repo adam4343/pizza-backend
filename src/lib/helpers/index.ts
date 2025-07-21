@@ -6,5 +6,5 @@ export function generateUniqueId() {
 
 export function getUser(req: Request) {
   // @ts-ignore
-  return req.user.id as number
+  return req.user.userId as number
 }
