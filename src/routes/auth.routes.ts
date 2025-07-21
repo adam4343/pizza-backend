@@ -82,7 +82,6 @@ authRouter.post("/google", async (req, res) => {
 
       res.cookie("auth-token", token, cookieOption);
 
-      // Send welcome email with Brevo
       try {
         const sendSmtpEmail = new brevo.SendSmtpEmail();
         sendSmtpEmail.subject = "Welcome to Dodo Pizza!";
@@ -110,7 +109,6 @@ authRouter.post("/google", async (req, res) => {
             </p>
           </div>
         `;
-        // Use your verified email as sender
         sendSmtpEmail.sender = { "name": "Dodo Pizza", "email": "adam.ingor1234@gmail.com" };
         sendSmtpEmail.to = [{ "email": newUser.email, "name": newUser.name }];
 
@@ -118,7 +116,6 @@ authRouter.post("/google", async (req, res) => {
         console.log('Welcome email sent successfully to:', newUser.email);
       } catch (emailError) {
         console.error('Error sending welcome email:', emailError);
-        // Don't fail the registration if email fails
       }
 
       res.json({ message: "You have been successfully logged in!" });
@@ -153,13 +150,12 @@ authRouter.post("/login", async (req, res) => {
       throw new Error("Passwords do not match");
     }
 
-    const tokenPayload = { id: existingUser.id };
+    const tokenPayload = { userId: existingUser.id };
 
     const token = jwt.sign(tokenPayload, env.SECRET_KEY);
 
     res.cookie("auth-token", token, cookieOption);
 
-    // Send login notification email
     try {
       const now = new Date();
       const sendSmtpEmail = new brevo.SendSmtpEmail();
@@ -192,7 +188,6 @@ authRouter.post("/login", async (req, res) => {
           </p>
         </div>
       `;
-      // Use your verified email as sender
       sendSmtpEmail.sender = { "name": "Dodo Pizza Security", "email": "adam.ingor1234@gmail.com" };
       sendSmtpEmail.to = [{ "email": existingUser.email, "name": existingUser.name }];
 
@@ -200,7 +195,6 @@ authRouter.post("/login", async (req, res) => {
       console.log('Login notification email sent successfully to:', existingUser.email);
     } catch (emailError) {
       console.error('Error sending login notification email:', emailError);
-      // Don't fail the login if email fails
     }
 
     res.json({ data: "You have been successfully logged in!" });
@@ -232,13 +226,12 @@ authRouter.post("/register", async (req, res) => {
       })
       .returning();
 
-    const tokenPayload = { id: newUser.id };
+    const tokenPayload = { userId: newUser.id };
 
     const token = jwt.sign(tokenPayload, env.SECRET_KEY);
 
     res.cookie("auth-token", token, cookieOption);
 
-    // Send welcome email with Brevo
     try {
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       sendSmtpEmail.subject = "Welcome to Dodo Pizza!";
@@ -266,7 +259,6 @@ authRouter.post("/register", async (req, res) => {
           </p>
         </div>
       `;
-      // Use your verified email as sender
       sendSmtpEmail.sender = { "name": "Dodo Pizza", "email": "adam.ingor1234@gmail.com" };
       sendSmtpEmail.to = [{ "email": newUser.email, "name": newUser.name }];
 
@@ -274,7 +266,6 @@ authRouter.post("/register", async (req, res) => {
       console.log('Welcome email sent successfully to:', newUser.email);
     } catch (emailError) {
       console.error('Error sending welcome email:', emailError);
-      // Don't fail the registration if email fails
     }
 
     res.json({ data: newUser, message: "User created successfully" });
@@ -296,9 +287,8 @@ authRouter.post("/forgot-password", async (req, res) => {
     }
 
     const token = crypto.randomUUID();
-    const expiresAt = addDays(new Date(), 1); // Token expires in 24 hours
+    const expiresAt = addDays(new Date(), 1); 
     
-    // Store the token in the database
     await db.insert(verificationCode).values({
       userId: existingUser.id,
       token: token,
@@ -307,7 +297,6 @@ authRouter.post("/forgot-password", async (req, res) => {
 
     const resetLink = `https://next-pizza-black.vercel.app/auth/reset-password/?token=${token}`;
 
-    // Send password reset email with Brevo
     try {
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       sendSmtpEmail.subject = "Reset Your Dodo Pizza Password";
@@ -335,7 +324,6 @@ authRouter.post("/forgot-password", async (req, res) => {
           </p>
         </div>
       `;
-      // Use your verified email as sender
       sendSmtpEmail.sender = { "name": "Dodo Pizza", "email": "adam.ingor1234@gmail.com" };
       sendSmtpEmail.to = [{ "email": existingUser.email, "name": existingUser.name }];
 
@@ -379,17 +367,14 @@ authRouter.post("/reset-password", async (req, res) => {
       .set({ password: hashedPassword })
       .where(eq(user.id, userId));
 
-    // Delete the used token
     await db
       .delete(verificationCode)
       .where(eq(verificationCode.token, token));
 
-    // Get user details for email
     const updatedUser = await db.query.user.findFirst({
       where: eq(user.id, userId),
     });
 
-    // Send password change confirmation email
     if (updatedUser) {
       try {
         const sendSmtpEmail = new brevo.SendSmtpEmail();
@@ -422,7 +407,6 @@ authRouter.post("/reset-password", async (req, res) => {
             </p>
           </div>
         `;
-        // Use your verified email as sender
         sendSmtpEmail.sender = { "name": "Dodo Pizza Security", "email": "adam.ingor1234@gmail.com" };
         sendSmtpEmail.to = [{ "email": updatedUser.email, "name": updatedUser.name }];
 
@@ -430,7 +414,6 @@ authRouter.post("/reset-password", async (req, res) => {
         console.log('Password change confirmation email sent successfully to:', updatedUser.email);
       } catch (emailError) {
         console.error('Error sending password change confirmation email:', emailError);
-        // Don't fail the password reset if email fails
       }
     }
 
