@@ -11,12 +11,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser(process.env.SECRET_KEY));
 app.use(cors({
-  origin: [
-    "http://localhost:3000",                 
-    "https://next-pizza-black.vercel.app"     
-  ],
+  origin: "https://next-pizza-black.vercel.app",
   credentials: true
 }));
+
 app.use('/auth', authRouter);
 app.use('/pizza', pizzaRouter);
 app.use('/cart', cartRouter);
